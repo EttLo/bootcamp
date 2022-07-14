@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClassroomDTO {
-    private long id;
+    private Long id;
     private String name;
     private Integer capacity;
     private String software;

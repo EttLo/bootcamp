@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditionDTO {
-    private long id;
+    private Long id;
     private String startDate;
     private String endDate;
     private long courseId;
