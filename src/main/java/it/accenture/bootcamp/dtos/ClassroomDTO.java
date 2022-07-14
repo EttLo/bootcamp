@@ -1,6 +1,7 @@
 package it.accenture.bootcamp.dtos;
 
 import it.accenture.bootcamp.models.Classroom;
+import it.accenture.bootcamp.models.WithId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,5 +29,15 @@ public class ClassroomDTO {
     public Classroom toClassroom() {
         return new Classroom(this.id, this.name, this.capacity, this.software, this.hasProjector, this.hasMainPc,
                 this.isComputerized, this.isVirtual());
+    }
+
+//    public Long getId(){return id;}
+
+    public Long getId(){
+        return id;
+    }
+
+    public void setId(Long id){
+
     }
 }

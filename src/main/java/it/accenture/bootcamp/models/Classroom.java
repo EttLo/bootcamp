@@ -36,4 +36,12 @@ public class Classroom implements WithId<Long>{
     @Column(name = "IS_VIRTUAL")
     private boolean isVirtual;
 
+    public Long getId(){
+        return id;
+    }
+
+    public void setId(Long id){
+
+    }
+
 }

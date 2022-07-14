@@ -1,15 +1,20 @@
 package it.accenture.bootcamp.repositories.implementations;
 
 import it.accenture.bootcamp.models.Sector;
+import it.accenture.bootcamp.models.Sector;
 import it.accenture.bootcamp.repositories.abstractions.SectorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -17,10 +22,15 @@ import java.util.function.Function;
 @Repository
 @Profile("jdbc")
 public class JdbcSectorRepository implements SectorRepository {
+    private JdbcTemplate template;
+
+    @Autowired
+    public JdbcSectorRepository(JdbcTemplate template) {
+        this.template = template;
+    }
     @Override
     public List<Sector> findAll() {
-        System.out.println("JDBC REPO: FIND ALL");
-        return List.of();
+        return template.query("SELECT * FROM COURSE", this::rowMapper);
     }
 
     @Override
@@ -35,6 +45,7 @@ public class JdbcSectorRepository implements SectorRepository {
 
     @Override
     public List<Sector> findAllById(Iterable<Long> longs) {
+//
         return null;
     }
 
@@ -44,33 +55,8 @@ public class JdbcSectorRepository implements SectorRepository {
     }
 
     @Override
-    public void deleteById(Long aLong) {
-
-    }
-
-    @Override
-    public void delete(Sector entity) {
-
-    }
-
-    @Override
-    public void deleteAllById(Iterable<? extends Long> longs) {
-
-    }
-
-    @Override
-    public void deleteAll(Iterable<? extends Sector> entities) {
-
-    }
-
-    @Override
-    public void deleteAll() {
-
-    }
-
-    @Override
-    public <S extends Sector> S save(S entity) {
-        return null;
+    public void deleteById(Long id) {
+        template.update("DELETE FROM COURSE WHERE ID = ?", new Object[]{id});
     }
 
     @Override
@@ -79,13 +65,17 @@ public class JdbcSectorRepository implements SectorRepository {
     }
 
     @Override
-    public Optional<Sector> findById(Long aLong) {
-        return Optional.empty();
+    public Optional<Sector> findById(Long id) {
+        Sector c = template.queryForObject("SELECT COURSE WHERE ID = ?", new Object[]{id}, this::rowMapper);
+        if (c == null)
+            return Optional.empty();
+        else
+            return Optional.of(c);
     }
 
     @Override
-    public boolean existsById(Long aLong) {
-        return false;
+    public boolean existsById(Long id) {
+        return findById(id).isPresent();
     }
 
     @Override
@@ -124,8 +114,8 @@ public class JdbcSectorRepository implements SectorRepository {
     }
 
     @Override
-    public Sector getById(Long aLong) {
-        return null;
+    public Sector getById(Long id) {
+        return findById(id).isPresent()? findById(id).get() : null;
     }
 
     @Override
@@ -166,5 +156,46 @@ public class JdbcSectorRepository implements SectorRepository {
     @Override
     public <S extends Sector, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
+    }
+
+    private Sector rowMapper(ResultSet rs, int rownNum) throws SQLException {
+        return new Sector(rs.getLong("ID"), rs.getString("NAME"));
+    }
+
+    @Override
+    public void delete(Sector c) {
+        deleteById(c.getId());
+    }
+
+    @Override
+    public void deleteAllById(Iterable<? extends Long> longs) {
+        for (Long id: longs) deleteById(id);
+    }
+
+    @Override
+    public void deleteAll(Iterable<? extends Sector> entities) {
+
+    }
+
+    @Override
+    public void deleteAll() {
+
+    }
+
+    @Override
+    public Sector save(Sector c) {
+        if (existsById(c.getId())){  //update
+            template.update("UPDATE CLASSROOM (ID, NAME))" +
+                    " VALUES (?, ?)", getComponents(c));
+        }
+        else{   //save
+            template.update("Insert INTO CLASSROOM ((ID, NAME)" +
+                    " VALUES (?, ?)", getComponents(c));
+        }
+        return c;
+    }
+
+    public Object[] getComponents(Sector c){
+        return new Object[]{ c.getId(), c.getName()};
     }
 }

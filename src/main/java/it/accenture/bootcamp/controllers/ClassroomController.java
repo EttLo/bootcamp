@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
+//import it.accenture.bootcamp.mappers.ClassroomMapper;
 import it.accenture.bootcamp.services.implementations.ClassroomCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,8 +57,8 @@ public class ClassroomController {
         // flattening: ritornare oggetti semplificati: DTO data transfering objects
         // classe simile all'entity che nasconde dati sensibili o strutture compliacate
         // e solo quelle necessarie
-        var cls = crudService.getAll();
-        var dtos = StreamSupport.stream(cls.spliterator(), false).map(ClassroomDTO::fromClassroom).toList();
+        Iterable<Classroom> cls = crudService.getAll();
+        Iterable<ClassroomDTO> dtos = StreamSupport.stream(cls.spliterator(), false).map(ClassroomDTO::fromClassroom).toList();
 
         return ResponseEntity.ok(dtos);
     }
@@ -87,6 +88,7 @@ public class ClassroomController {
         try {
             Classroom cSaved = crudService.saveOrUpdate(c);
             var dto = ClassroomDTO.fromClassroom(cSaved);
+//            var dto = ClassroomMapper.INSTANCE.toClassroomDto(cSaved);
             URI uri = new URI("localhost:8080/classroom/" + cdto.getId());
             return ResponseEntity.created(uri).body(dto);
         } catch (URISyntaxException e) {
