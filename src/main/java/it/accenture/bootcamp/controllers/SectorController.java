@@ -3,6 +3,7 @@ package it.accenture.bootcamp.controllers;
 import it.accenture.bootcamp.dtos.CourseDTO;
 import it.accenture.bootcamp.models.Sector;
 import it.accenture.bootcamp.services.abstractions.EducationService;
+import it.accenture.bootcamp.services.implementations.SectorCrudService;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +19,16 @@ import java.util.stream.StreamSupport;
 public class SectorController {
 
     private EducationService eduService;
+    private SectorCrudService crudService;
 
     @Autowired
-    public SectorController(EducationService eduService) {
+    public SectorController(EducationService eduService, SectorCrudService crudService) {
         this.eduService = eduService;
+        this.crudService = crudService;
     }
 
     @GetMapping
     public ResponseEntity<Iterable<Sector>> getAll(){
-        return ResponseEntity.ok(eduService.getAllSectors());
+        return ResponseEntity.ok(crudService.getAll());
     }
 }

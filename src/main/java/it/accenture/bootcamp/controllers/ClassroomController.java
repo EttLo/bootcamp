@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
+import it.accenture.bootcamp.services.implementations.ClassroomCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +28,12 @@ import it.accenture.bootcamp.services.abstractions.EducationService;
 public class ClassroomController {
 
     private EducationService eduService;
+    private ClassroomCrudService crudService;
 
     @Autowired
-    public ClassroomController(EducationService eduService) {
+    public ClassroomController(EducationService eduService, ClassroomCrudService crudService) {
         this.eduService = eduService;
+        this.crudService = crudService;
     }
 
     @GetMapping
@@ -53,7 +56,7 @@ public class ClassroomController {
         // flattening: ritornare oggetti semplificati: DTO data transfering objects
         // classe simile all'entity che nasconde dati sensibili o strutture compliacate
         // e solo quelle necessarie
-        var cls = eduService.getAllClassrooms();
+        var cls = crudService.getAll();
         var dtos = StreamSupport.stream(cls.spliterator(), false).map(ClassroomDTO::fromClassroom).toList();
 
         return ResponseEntity.ok(dtos);
@@ -61,7 +64,7 @@ public class ClassroomController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<ClassroomDTO> findById(@PathVariable long id) {
-        Optional<Classroom> optClass = eduService.findClassroomById(id);
+        Optional<Classroom> optClass = crudService.findById(id);
         if (optClass.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -71,7 +74,7 @@ public class ClassroomController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteById(@PathVariable long id) {
         try {
-            eduService.deleteClassroomById(id);
+            crudService.deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -82,7 +85,7 @@ public class ClassroomController {
     public ResponseEntity<?> create(@RequestBody ClassroomDTO cdto) {
         Classroom c = cdto.toClassroom();
         try {
-            Classroom cSaved = eduService.saveOrUpdateClassroom(c);
+            Classroom cSaved = crudService.saveOrUpdate(c);
             var dto = ClassroomDTO.fromClassroom(cSaved);
             URI uri = new URI("localhost:8080/classroom/" + cdto.getId());
             return ResponseEntity.created(uri).body(dto);
@@ -97,7 +100,7 @@ public class ClassroomController {
     public ResponseEntity<?> update(@RequestBody ClassroomDTO cdto, @PathVariable long id) {
         Classroom c = cdto.toClassroom();
         try {
-            Classroom cSaved = eduService.saveOrUpdateClassroom(c);
+            Classroom cSaved = crudService.saveOrUpdate(c);
             ClassroomDTO dto = ClassroomDTO.fromClassroom(cSaved);
             return ResponseEntity.ok(dto);
 

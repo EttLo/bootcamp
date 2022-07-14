@@ -1,15 +1,20 @@
 package it.accenture.bootcamp.repositories.implementations;
 
 import it.accenture.bootcamp.models.Course;
+import it.accenture.bootcamp.models.Course;
 import it.accenture.bootcamp.repositories.abstractions.CourseRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -17,9 +22,15 @@ import java.util.function.Function;
 @Repository
 @Profile("jdbc")
 public class JdbcCourseRepository implements CourseRepository {
+    private JdbcTemplate template;
+
+    @Autowired
+    public JdbcCourseRepository(JdbcTemplate template) {
+        this.template = template;
+    }
     @Override
     public List<Course> findAll() {
-        return null;
+        return template.query("SELECT * FROM COURSE", this::rowMapper);
     }
 
     @Override
@@ -34,6 +45,7 @@ public class JdbcCourseRepository implements CourseRepository {
 
     @Override
     public List<Course> findAllById(Iterable<Long> longs) {
+//
         return null;
     }
 
@@ -43,33 +55,8 @@ public class JdbcCourseRepository implements CourseRepository {
     }
 
     @Override
-    public void deleteById(Long aLong) {
-
-    }
-
-    @Override
-    public void delete(Course entity) {
-
-    }
-
-    @Override
-    public void deleteAllById(Iterable<? extends Long> longs) {
-
-    }
-
-    @Override
-    public void deleteAll(Iterable<? extends Course> entities) {
-
-    }
-
-    @Override
-    public void deleteAll() {
-
-    }
-
-    @Override
-    public <S extends Course> S save(S entity) {
-        return null;
+    public void deleteById(Long id) {
+        template.update("DELETE FROM COURSE WHERE ID = ?", new Object[]{id});
     }
 
     @Override
@@ -78,13 +65,17 @@ public class JdbcCourseRepository implements CourseRepository {
     }
 
     @Override
-    public Optional<Course> findById(Long aLong) {
-        return Optional.empty();
+    public Optional<Course> findById(Long id) {
+        Course c = template.queryForObject("SELECT COURSE WHERE ID = ?", new Object[]{id}, this::rowMapper);
+        if (c == null)
+            return Optional.empty();
+        else
+            return Optional.of(c);
     }
 
     @Override
-    public boolean existsById(Long aLong) {
-        return false;
+    public boolean existsById(Long id) {
+        return findById(id).isPresent();
     }
 
     @Override
@@ -123,8 +114,8 @@ public class JdbcCourseRepository implements CourseRepository {
     }
 
     @Override
-    public Course getById(Long aLong) {
-        return null;
+    public Course getById(Long id) {
+        return findById(id).isPresent()? findById(id).get() : null;
     }
 
     @Override
@@ -165,5 +156,48 @@ public class JdbcCourseRepository implements CourseRepository {
     @Override
     public <S extends Course, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
+    }
+
+    private Course rowMapper(ResultSet rs, int rownNum) throws SQLException {
+        return new Course(rs.getLong("ID"), rs.getString("TITLE"),
+                rs.getInt("DURATION"), rs.getString("COURSE_LEVEL"),
+                rs.getString("DESCRIPTION"), rs.getLong("SECTOR_ID"));
+    }
+
+    @Override
+    public void delete(Course c) {
+        deleteById(c.getId());
+    }
+
+    @Override
+    public void deleteAllById(Iterable<? extends Long> longs) {
+        for (Long id: longs) deleteById(id);
+    }
+
+    @Override
+    public void deleteAll(Iterable<? extends Course> entities) {
+
+    }
+
+    @Override
+    public void deleteAll() {
+
+    }
+
+    @Override
+    public Course save(Course c) {
+        if (existsById(c.getId())){  //update
+            template.update("UPDATE CLASSROOM (ID, TITLE, DURATION, COURSE_LEVEL, DESCRIPTION, SECTOR_ID)" +
+                    " VALUES (?, ?, ?, ?, ?, ?)", getComponents(c));
+        }
+        else{   //save
+            template.update("Insert INTO CLASSROOM ((ID, TITLE, DURATION, COURSE_LEVEL, DESCRIPTION, SECTOR_ID)" +
+                    " VALUES (?, ?, ?, ?, ?, ?)", getComponents(c));
+        }
+        return c;
+    }
+
+    public Object[] getComponents(Course c){
+        return new Object[]{ c.getId(), c.getTitle(), c.getDuration(), c.getCourseLevel(), c.getDescription(), c.getSectorId()};
     }
 }

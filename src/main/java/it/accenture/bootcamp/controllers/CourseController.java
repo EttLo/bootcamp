@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
+import it.accenture.bootcamp.services.implementations.CourseCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,22 +27,24 @@ import it.accenture.bootcamp.services.abstractions.EducationService;
 @RequestMapping("course")
 public class CourseController {
     private EducationService eduService;
+    private CourseCrudService crudService;
 
     @Autowired
-    public CourseController(EducationService eduService) {
+    public CourseController(EducationService eduService, CourseCrudService crudService) {
         this.eduService = eduService;
+        this.crudService = crudService;
     }
 
     @GetMapping
     public ResponseEntity<Iterable<CourseDTO>> getAll() {
-        var cls = eduService.getAllCourses();
+        var cls = crudService.getAll();
         var dtos = StreamSupport.stream(cls.spliterator(), false).map(CourseDTO::fromCourse).toList();
         return ResponseEntity.ok(dtos);
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<CourseDTO> findById(@PathVariable long id) {
-        Optional<Course> optClass = eduService.findCourseById(id);
+        Optional<Course> optClass = crudService.findById(id);
         if (optClass.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -51,7 +54,7 @@ public class CourseController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteById(@PathVariable long id) {
         try {
-            eduService.deleteCourseById(id);
+            crudService.deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -62,7 +65,7 @@ public class CourseController {
     public ResponseEntity<?> create(@RequestBody CourseDTO cdto) {
         Course c = cdto.toCourse();
         try {
-            Course cSaved = eduService.saveOrUpdateCourse(c);
+            Course cSaved = crudService.saveOrUpdate(c);
             var dto = CourseDTO.fromCourse(cSaved);
             URI uri = new URI("localhost:8080/course/" + cdto.getId());
             return ResponseEntity.created(uri).body(dto);
@@ -77,7 +80,7 @@ public class CourseController {
     public ResponseEntity<?> update(@RequestBody CourseDTO cdto, @PathVariable long id) {
         Course c = cdto.toCourse();
         try {
-            Course cSaved = eduService.saveOrUpdateCourse(c);
+            Course cSaved = crudService.saveOrUpdate(c);
             CourseDTO dto = CourseDTO.fromCourse(cSaved);
             return ResponseEntity.ok(dto);
 

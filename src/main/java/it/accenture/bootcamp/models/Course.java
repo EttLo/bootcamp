@@ -16,11 +16,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Course {
+public class Course implements WithId<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private long id;
+    private Long id;
     @Column(name = "TITLE")
     private String title;
     @Column(name = "DURATION")

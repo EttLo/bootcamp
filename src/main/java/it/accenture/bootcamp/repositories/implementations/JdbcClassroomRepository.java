@@ -2,6 +2,7 @@ package it.accenture.bootcamp.repositories.implementations;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -47,6 +48,8 @@ public class JdbcClassroomRepository implements ClassroomRepository {
 
     @Override
     public List<Classroom> findAllById(Iterable<Long> longs) {
+//        List<Classroom> classes = new ArrayList<>();
+//        return template.query("SELECT * FROM CLASSROOM WHERE ID = :id", this::rowMapper);
         return null;
     }
 
@@ -56,8 +59,8 @@ public class JdbcClassroomRepository implements ClassroomRepository {
     }
 
     @Override
-    public void deleteById(Long aLong) {
-
+    public void deleteById(Long id) {
+        template.update("DELETE FROM CLASSROOM WHERE ID = ?", new Object[]{id});
     }
 
     @Override
@@ -66,13 +69,17 @@ public class JdbcClassroomRepository implements ClassroomRepository {
     }
 
     @Override
-    public Optional<Classroom> findById(Long aLong) {
-        return Optional.empty();
+    public Optional<Classroom> findById(Long id) {
+        Classroom c = template.queryForObject("SELECT CLASSROOM WHERE ID = ?", new Object[]{id}, this::rowMapper);
+        if (c == null)
+            return Optional.empty();
+        else
+            return Optional.of(c);
     }
 
     @Override
-    public boolean existsById(Long aLong) {
-        return false;
+    public boolean existsById(Long id) {
+        return findById(id).isPresent();
     }
 
     @Override
@@ -111,8 +118,8 @@ public class JdbcClassroomRepository implements ClassroomRepository {
     }
 
     @Override
-    public Classroom getById(Long aLong) {
-        return null;
+    public Classroom getById(Long id) {
+        return findById(id).isPresent()? findById(id).get() : null;
     }
 
     @Override
@@ -177,13 +184,12 @@ public class JdbcClassroomRepository implements ClassroomRepository {
 
     @Override
     public void delete(Classroom c) {
-        // TODO Auto-generated method stub
-
+        deleteById(c.getId());
     }
 
     @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
-
+        for (Long id: longs) deleteById(id);
     }
 
     @Override
@@ -196,28 +202,21 @@ public class JdbcClassroomRepository implements ClassroomRepository {
 
     }
 
-//    @Override
-//    public void deleteById(long id) {
-//        // TODO Auto-generated method stub
-//
-//    }
-//
-//    @Override
-//    public Optional<Classroom> findById(long id) {
-//        // TODO Auto-generated method stub
-//        return Optional.empty();
-//    }
-//
     @Override
     public Classroom save(Classroom c) {
-        // TODO Auto-generated method stub
-        return null;
+        if (existsById(c.getId())){  //update
+            template.update("UPDATE CLASSROOM (ID, NAME, CAPACITY, SOFTWARE, PROJECTOR, MAIN_PC, IS_COMPUTERIZED, IS_VIRTUAL)" +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?)", getComponents(c));
+        }
+            else{   //save
+                template.update("Insert INTO CLASSROOM ((ID, NAME, CAPACITY, SOFTWARE, PROJECTOR, MAIN_PC, IS_COMPUTERIZED, IS_VIRTUAL)" +
+                        " VALUES (?, ?, ?, ?, ?, ?, ?, ?)", getComponents(c));
+        }
+        return c;
     }
-//
-//    @Override
-//    public boolean existsById(long id) {
-//        // TODO Auto-generated method stub
-//        return false;
-//    }
+
+    public Object[] getComponents(Classroom c){
+        return new Object[]{ c.getId(), c.getName(), c.getCapacity(), c.getSoftware(), c.getHasProjector(), c.getHasMainPc(), c.getIsComputerized(), c.isVirtual()};
+    }
 
 }

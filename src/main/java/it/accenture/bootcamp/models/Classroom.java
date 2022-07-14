@@ -15,13 +15,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Entity
-public class Classroom {
+public class Classroom implements WithId<Long>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private long id;
+    private Long id;
     @Column(name = "NAME")
     private String name;
     @Column(name = "CAPACITY")
@@ -36,4 +35,5 @@ public class Classroom {
     private Boolean isComputerized;
     @Column(name = "IS_VIRTUAL")
     private boolean isVirtual;
+
 }
