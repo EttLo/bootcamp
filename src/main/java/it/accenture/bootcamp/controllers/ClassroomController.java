@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import it.accenture.bootcamp.dtos.ClassroomDTO;
 import it.accenture.bootcamp.exceptions.EntityNotFoundException;
+import it.accenture.bootcamp.mappers.ClassroomMapper;
 import it.accenture.bootcamp.models.Classroom;
 import it.accenture.bootcamp.services.abstractions.EducationService;
 
@@ -58,7 +59,8 @@ public class ClassroomController {
         // classe simile all'entity che nasconde dati sensibili o strutture compliacate
         // e solo quelle necessarie
         Iterable<Classroom> cls = crudService.getAll();
-        Iterable<ClassroomDTO> dtos = StreamSupport.stream(cls.spliterator(), false).map(ClassroomDTO::fromClassroom).toList();
+        Iterable<ClassroomDTO> dtos = StreamSupport.stream(cls.spliterator(), false).map(ClassroomDTO::fromClassroom)
+                .toList();
 
         return ResponseEntity.ok(dtos);
     }
@@ -87,8 +89,8 @@ public class ClassroomController {
         Classroom c = cdto.toClassroom();
         try {
             Classroom cSaved = crudService.saveOrUpdate(c);
-            var dto = ClassroomDTO.fromClassroom(cSaved);
-//            var dto = ClassroomMapper.INSTANCE.toClassroomDto(cSaved);
+            // var dto = ClassroomDTO.fromClassroom(cSaved);
+            var dto = ClassroomMapper.INSTANCE.toClassroomDto(cSaved);
             URI uri = new URI("localhost:8080/classroom/" + cdto.getId());
             return ResponseEntity.created(uri).body(dto);
         } catch (URISyntaxException e) {

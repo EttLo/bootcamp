@@ -16,7 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Classroom implements WithId<Long>{
+public class Classroom implements WithId<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -35,13 +35,5 @@ public class Classroom implements WithId<Long>{
     private Boolean isComputerized;
     @Column(name = "IS_VIRTUAL")
     private boolean isVirtual;
-
-    public Long getId(){
-        return id;
-    }
-
-    public void setId(Long id){
-
-    }
 
 }

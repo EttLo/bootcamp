@@ -31,13 +31,4 @@ public class ClassroomDTO {
                 this.isComputerized, this.isVirtual());
     }
 
-//    public Long getId(){return id;}
-
-    public Long getId(){
-        return id;
-    }
-
-    public void setId(Long id){
-
-    }
 }

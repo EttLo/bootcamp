@@ -11,9 +11,10 @@ import java.util.Optional;
 import static it.accenture.bootcamp.services.implementations.EducationServiceImpl.ERROR_NOT_FOUND;
 
 //@Service
-public class CrudService<T extends WithId<K>, K, R extends JpaRepository<T, K>> implements AbstractCrudService<T, K>{
+public class CrudService<T extends WithId<K>, K, R extends JpaRepository<T, K>> implements AbstractCrudService<T, K> {
     private R repo;
-    public CrudService(R repo){
+
+    public CrudService(R repo) {
         this.repo = repo;
     }
 
@@ -38,7 +39,7 @@ public class CrudService<T extends WithId<K>, K, R extends JpaRepository<T, K>> 
 
     @Override
     public T saveOrUpdate(T t) throws EntityNotFoundException {
-        if (!t.getId().equals(0) && !exists(t.getId())) {
+        if (t.getId() != null && !t.getId().equals(0) && !exists(t.getId())) {
             throw new EntityNotFoundException(ERROR_NOT_FOUND, Classroom.class, (long) t.getId());
         }
         return repo.save(t);
