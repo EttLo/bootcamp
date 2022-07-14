@@ -1,7 +1,6 @@
 package it.accenture.bootcamp.repositories.implementations;
 
 import it.accenture.bootcamp.models.Sector;
-import it.accenture.bootcamp.models.Sector;
 import it.accenture.bootcamp.repositories.abstractions.SectorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -28,6 +27,7 @@ public class JdbcSectorRepository implements SectorRepository {
     public JdbcSectorRepository(JdbcTemplate template) {
         this.template = template;
     }
+
     @Override
     public List<Sector> findAll() {
         return template.query("SELECT * FROM COURSE", this::rowMapper);
@@ -45,7 +45,7 @@ public class JdbcSectorRepository implements SectorRepository {
 
     @Override
     public List<Sector> findAllById(Iterable<Long> longs) {
-//
+        //
         return null;
     }
 
@@ -56,7 +56,7 @@ public class JdbcSectorRepository implements SectorRepository {
 
     @Override
     public void deleteById(Long id) {
-        template.update("DELETE FROM COURSE WHERE ID = ?", new Object[]{id});
+        template.update("DELETE FROM COURSE WHERE ID = ?", new Object[] { id });
     }
 
     @Override
@@ -66,7 +66,7 @@ public class JdbcSectorRepository implements SectorRepository {
 
     @Override
     public Optional<Sector> findById(Long id) {
-        Sector c = template.queryForObject("SELECT COURSE WHERE ID = ?", new Object[]{id}, this::rowMapper);
+        Sector c = template.queryForObject("SELECT COURSE WHERE ID = ?", new Object[] { id }, this::rowMapper);
         if (c == null)
             return Optional.empty();
         else
@@ -115,7 +115,7 @@ public class JdbcSectorRepository implements SectorRepository {
 
     @Override
     public Sector getById(Long id) {
-        return findById(id).isPresent()? findById(id).get() : null;
+        return findById(id).isPresent() ? findById(id).get() : null;
     }
 
     @Override
@@ -154,7 +154,8 @@ public class JdbcSectorRepository implements SectorRepository {
     }
 
     @Override
-    public <S extends Sector, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Sector, R> R findBy(Example<S> example,
+            Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
     }
 
@@ -169,7 +170,8 @@ public class JdbcSectorRepository implements SectorRepository {
 
     @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
-        for (Long id: longs) deleteById(id);
+        for (Long id : longs)
+            deleteById(id);
     }
 
     @Override
@@ -184,18 +186,17 @@ public class JdbcSectorRepository implements SectorRepository {
 
     @Override
     public Sector save(Sector c) {
-        if (existsById(c.getId())){  //update
+        if (existsById(c.getId())) { // update
             template.update("UPDATE CLASSROOM (ID, NAME))" +
                     " VALUES (?, ?)", getComponents(c));
-        }
-        else{   //save
+        } else { // save
             template.update("Insert INTO CLASSROOM ((ID, NAME)" +
                     " VALUES (?, ?)", getComponents(c));
         }
         return c;
     }
 
-    public Object[] getComponents(Sector c){
-        return new Object[]{ c.getId(), c.getName()};
+    public Object[] getComponents(Sector c) {
+        return new Object[] { c.getId(), c.getName() };
     }
 }

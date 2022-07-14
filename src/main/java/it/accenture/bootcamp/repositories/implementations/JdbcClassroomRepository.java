@@ -2,7 +2,6 @@ package it.accenture.bootcamp.repositories.implementations;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -48,8 +47,9 @@ public class JdbcClassroomRepository implements ClassroomRepository {
 
     @Override
     public List<Classroom> findAllById(Iterable<Long> longs) {
-//        List<Classroom> classes = new ArrayList<>();
-//        return template.query("SELECT * FROM CLASSROOM WHERE ID = :id", this::rowMapper);
+        // List<Classroom> classes = new ArrayList<>();
+        // return template.query("SELECT * FROM CLASSROOM WHERE ID = :id",
+        // this::rowMapper);
         return null;
     }
 
@@ -60,7 +60,7 @@ public class JdbcClassroomRepository implements ClassroomRepository {
 
     @Override
     public void deleteById(Long id) {
-        template.update("DELETE FROM CLASSROOM WHERE ID = ?", new Object[]{id});
+        template.update("DELETE FROM CLASSROOM WHERE ID = ?", new Object[] { id });
     }
 
     @Override
@@ -70,7 +70,7 @@ public class JdbcClassroomRepository implements ClassroomRepository {
 
     @Override
     public Optional<Classroom> findById(Long id) {
-        Classroom c = template.queryForObject("SELECT CLASSROOM WHERE ID = ?", new Object[]{id}, this::rowMapper);
+        Classroom c = template.queryForObject("SELECT CLASSROOM WHERE ID = ?", new Object[] { id }, this::rowMapper);
         if (c == null)
             return Optional.empty();
         else
@@ -119,7 +119,7 @@ public class JdbcClassroomRepository implements ClassroomRepository {
 
     @Override
     public Classroom getById(Long id) {
-        return findById(id).isPresent()? findById(id).get() : null;
+        return findById(id).isPresent() ? findById(id).get() : null;
     }
 
     @Override
@@ -158,7 +158,8 @@ public class JdbcClassroomRepository implements ClassroomRepository {
     }
 
     @Override
-    public <S extends Classroom, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Classroom, R> R findBy(Example<S> example,
+            Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
     }
 
@@ -189,7 +190,8 @@ public class JdbcClassroomRepository implements ClassroomRepository {
 
     @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
-        for (Long id: longs) deleteById(id);
+        for (Long id : longs)
+            deleteById(id);
     }
 
     @Override
@@ -204,19 +206,24 @@ public class JdbcClassroomRepository implements ClassroomRepository {
 
     @Override
     public Classroom save(Classroom c) {
-        if (existsById(c.getId())){  //update
-            template.update("UPDATE CLASSROOM (ID, NAME, CAPACITY, SOFTWARE, PROJECTOR, MAIN_PC, IS_COMPUTERIZED, IS_VIRTUAL)" +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?)", getComponents(c));
-        }
-            else{   //save
-                template.update("Insert INTO CLASSROOM ((ID, NAME, CAPACITY, SOFTWARE, PROJECTOR, MAIN_PC, IS_COMPUTERIZED, IS_VIRTUAL)" +
-                        " VALUES (?, ?, ?, ?, ?, ?, ?, ?)", getComponents(c));
+        if (existsById(c.getId())) { // update
+            template.update(
+                    "UPDATE CLASSROOM (ID, NAME, CAPACITY, SOFTWARE, PROJECTOR, MAIN_PC, IS_COMPUTERIZED, IS_VIRTUAL)" +
+                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    getComponents(c));
+        } else { // save
+            template.update(
+                    "Insert INTO CLASSROOM ((ID, NAME, CAPACITY, SOFTWARE, PROJECTOR, MAIN_PC, IS_COMPUTERIZED, IS_VIRTUAL)"
+                            +
+                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    getComponents(c));
         }
         return c;
     }
 
-    public Object[] getComponents(Classroom c){
-        return new Object[]{ c.getId(), c.getName(), c.getCapacity(), c.getSoftware(), c.getHasProjector(), c.getHasMainPc(), c.getIsComputerized(), c.isVirtual()};
+    public Object[] getComponents(Classroom c) {
+        return new Object[] { c.getId(), c.getName(), c.getCapacity(), c.getSoftware(), c.getHasProjector(),
+                c.getHasMainPc(), c.getIsComputerized(), c.isVirtual() };
     }
 
 }

@@ -1,7 +1,6 @@
 package it.accenture.bootcamp.dtos;
 
 import it.accenture.bootcamp.models.Classroom;
-import it.accenture.bootcamp.models.WithId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

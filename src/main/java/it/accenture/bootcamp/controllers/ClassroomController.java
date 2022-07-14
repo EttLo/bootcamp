@@ -59,7 +59,8 @@ public class ClassroomController {
         // classe simile all'entity che nasconde dati sensibili o strutture compliacate
         // e solo quelle necessarie
         Iterable<Classroom> cls = crudService.getAll();
-        Iterable<ClassroomDTO> dtos = StreamSupport.stream(cls.spliterator(), false).map(ClassroomDTO::fromClassroom)
+        Iterable<ClassroomDTO> dtos = StreamSupport.stream(cls.spliterator(), false)
+                .map(ClassroomMapper.INSTANCE::toClassroomDto)
                 .toList();
 
         return ResponseEntity.ok(dtos);
@@ -71,7 +72,7 @@ public class ClassroomController {
         if (optClass.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(optClass.map(ClassroomDTO::fromClassroom).get());
+        return ResponseEntity.ok(optClass.map(ClassroomMapper.INSTANCE::toClassroomDto).get());
     }
 
     @DeleteMapping(value = "/{id}")
@@ -105,7 +106,7 @@ public class ClassroomController {
         Classroom c = cdto.toClassroom();
         try {
             Classroom cSaved = crudService.saveOrUpdate(c);
-            ClassroomDTO dto = ClassroomDTO.fromClassroom(cSaved);
+            ClassroomDTO dto = ClassroomMapper.INSTANCE.toClassroomDto(cSaved);
             return ResponseEntity.ok(dto);
 
         } catch (EntityNotFoundException e) {
