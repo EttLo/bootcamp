@@ -79,6 +79,12 @@ public class CourseController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<?> update(@RequestBody CourseDTO cdto, @PathVariable long id) {
+        if (cdto.getId() == null) {
+            cdto.setId(id);
+        }
+        if (id != cdto.getId()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Path id and entity id don't match");
+        }
         Course c = CourseMapper.INSTANCE.toCourse(cdto);
         try {
             Course cSaved = crudService.saveOrUpdate(c);

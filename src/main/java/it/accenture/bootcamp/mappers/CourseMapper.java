@@ -14,5 +14,7 @@ public interface CourseMapper {
     @Mapping(source = "sector.name", target = "sectorName")
     CourseDTO toCourseDto(Course course);
 
+    @Mapping(source = "sectorId", target = "sector.id")
+    @Mapping(source = "sectorName", target = "sector.name")
     Course toCourse(CourseDTO courseDto);
 }
