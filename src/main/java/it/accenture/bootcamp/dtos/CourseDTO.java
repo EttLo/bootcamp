@@ -17,14 +17,17 @@ public class CourseDTO {
     private String courseLevel;
     private String description;
     private long sectorId;
+    private String sectorName;
 
-    public static CourseDTO fromCourse(Course c) {
-        return new CourseDTO(c.getId(), c.getTitle(), c.getDuration(), c.getCourseLevel(), c.getDescription(),
-                c.getSectorId());
-    }
+    // public static CourseDTO fromCourse(Course c) {
+    // return new CourseDTO(c.getId(), c.getTitle(), c.getDuration(),
+    // c.getCourseLevel(), c.getDescription(),
+    // c.getSectorId());
+    // }
 
-    public Course toCourse() {
-        return new Course(this.getId(), this.getTitle(), this.getDuration(), this.getCourseLevel(),
-                this.getDescription(), this.getSectorId());
-    }
+    // public Course toCourse() {
+    // return new Course(this.getId(), this.getTitle(), this.getDuration(),
+    // this.getCourseLevel(),
+    // this.getDescription(), this.getSectorId());
+    // }
 }

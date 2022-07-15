@@ -16,11 +16,10 @@ public class EditionDTO {
     private String endDate;
     private long courseId;
     private String courseTitle;
-    private long classroomId;
-    private String classroomName;
 
-    public static EditionDTO fromEdition(Edition e) {
-        return new EditionDTO(e.getId(), e.getStartDate().toString(), e.getEndDate().toString(), e.getCourse().getId(),
-                e.getCourse().getTitle(), e.getClassroom().getId(), e.getClassroom().getName());
-    }
+    // public static EditionDTO fromEdition(Edition e) {
+    // return new EditionDTO(e.getId(), e.getStartDate().toString(),
+    // e.getEndDate().toString(), e.getCourse().getId(),
+    // e.getCourse().getTitle());
+    // }
 }
