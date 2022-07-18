@@ -197,17 +197,24 @@ public class JdbcCourseRepository implements CourseRepository {
     @Override
     public Course save(Course c) {
         if (existsById(c.getId())) { // update
-            template.update("UPDATE CLASSROOM (ID, TITLE, DURATION, COURSE_LEVEL, DESCRIPTION, SECTOR_ID)" +
-                    " VALUES (?, ?, ?, ?, ?, ?)", getComponents(c));
+            template.update("UPDATE CLASSROOM SET TITLE=? DURATION=? COURSE_LEVEL=? DESCRIPTION=? SECTOR_ID=?" +
+                    " WHERE ID = ?", getComponentsUpdate(c));
+
         } else { // save
-            template.update("Insert INTO CLASSROOM ((ID, TITLE, DURATION, COURSE_LEVEL, DESCRIPTION, SECTOR_ID)" +
-                    " VALUES (?, ?, ?, ?, ?, ?)", getComponents(c));
+            template.update("Insert INTO CLASSROOM (TITLE, DURATION, COURSE_LEVEL, DESCRIPTION, SECTOR_ID)" +
+                    " VALUES (?, ?, ?, ?, ?)", getComponents(c));
         }
         return c;
     }
 
     public Object[] getComponents(Course c) {
-        return new Object[] { c.getId(), c.getTitle(), c.getDuration(), c.getCourseLevel(), c.getDescription(),
+        return new Object[] { c.getTitle(), c.getDuration(), c.getCourseLevel(), c.getDescription(),
                 c.getSector().getId() };
     }
+
+    public Object[] getComponentsUpdate(Course c) {
+        return new Object[] { c.getTitle(), c.getDuration(), c.getCourseLevel(), c.getDescription(),
+                c.getSector().getId(), c.getId() };
+    }
+
 }
