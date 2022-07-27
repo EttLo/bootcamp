@@ -60,7 +60,7 @@ public class ClassroomController {
         // e solo quelle necessarie
         Iterable<Classroom> cls = crudService.getAll();
         Iterable<ClassroomDTO> dtos = StreamSupport.stream(cls.spliterator(), false)
-                .map(ClassroomMapper.INSTANCE::toClassroomDto)
+                    .map(ClassroomMapper.INSTANCE::toClassroomDto)
                 .toList();
 
         return ResponseEntity.ok(dtos);
@@ -92,7 +92,7 @@ public class ClassroomController {
             Classroom cSaved = crudService.saveOrUpdate(c);
             // var dto = ClassroomDTO.fromClassroom(cSaved);
             var dto = ClassroomMapper.INSTANCE.toClassroomDto(cSaved);
-            URI uri = new URI("localhost:8080/classroom/" + cdto.getId());
+            URI uri = new URI("localhost:8080/classroom/" + cdto            .getId());
             return ResponseEntity.created(uri).body(dto);
         } catch (URISyntaxException e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
